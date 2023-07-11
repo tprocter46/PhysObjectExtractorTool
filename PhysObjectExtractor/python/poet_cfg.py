@@ -191,13 +191,7 @@ else:
 				       )
 	
 	process.mytruthjets= cms.EDAnalyzer('TruthJetAnalyzer',
-				       InputCollection = cms.InputTag("ak5PFJets"),
-				       jecL1Name = cms.FileInPath('PhysObjectExtractorTool/PhysObjectExtractor/JEC/'+JecString+'L1FastJet_AK5PF.txt'), 
-				       jecL2Name = cms.FileInPath('PhysObjectExtractorTool/PhysObjectExtractor/JEC/'+JecString+'L2Relative_AK5PF.txt'),
-				       jecL3Name = cms.FileInPath('PhysObjectExtractorTool/PhysObjectExtractor/JEC/'+JecString+'L3Absolute_AK5PF.txt'),
-				       jecResName = cms.FileInPath('PhysObjectExtractorTool/PhysObjectExtractor/JEC/'+JecString+'L2L3Residual_AK5PF.txt'),
-				       jecUncName = cms.FileInPath('PhysObjectExtractorTool/PhysObjectExtractor/JEC/'+JecString+'Uncertainty_AK5PF.txt'),
-				       jerResName = cms.FileInPath('PhysObjectExtractorTool/PhysObjectExtractor/JEC/JetResolutionInputAK5PF.txt')
+				       InputCollection = cms.InputTag("ak5PFJets")
 				       )
 
 process.mymets= cms.EDAnalyzer('MetAnalyzer',
