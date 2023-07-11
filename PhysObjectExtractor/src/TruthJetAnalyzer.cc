@@ -22,16 +22,13 @@
 #include "math.h"
 
 //classes to extract PFJet information
+#include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/JetReco/interface/PFJet.h"
 #include "DataFormats/JetReco/interface/PFJetCollection.h"
-#include "DataFormats/BTauReco/interface/JetTag.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
-#include "DataFormats/JetReco/interface/Jet.h"
 #include "SimDataFormats/JetMatching/interface/JetFlavourInfo.h"
 #include "SimDataFormats/JetMatching/interface/JetFlavourInfoMatching.h"
-#include "DataFormats/JetReco/interface/CaloJet.h"
-#include "DataFormats/RecoCandidate/interface/RecoCandidate.h"
 
 
 //classes to save data
