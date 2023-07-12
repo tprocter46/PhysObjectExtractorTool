@@ -25,6 +25,8 @@
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/JetReco/interface/PFJet.h"
 #include "DataFormats/JetReco/interface/PFJetCollection.h"
+#include "DataFormats/JetReco/interface/GenJet.h"
+#include "DataFormats/JetReco/interface/GenJetCollection.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "SimDataFormats/JetMatching/interface/JetFlavourInfo.h"
@@ -137,7 +139,7 @@ TruthJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   using namespace edm;
   using namespace std;
 
-  Handle<reco::PFJetCollection> myjets;
+  Handle<reco::GenJetCollection> myjets;
   iEvent.getByLabel(jetInput, myjets);
 
   Handle<reco::JetFlavourInfoMatchingCollection> injets;
@@ -157,7 +159,7 @@ TruthJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   if(myjets.isValid()){
     int min_pt = 20;
 
-    for (reco::PFJetCollection::const_iterator itjet=myjets->begin(); itjet!=myjets->end(); ++itjet){
+    for (reco::GenJetCollection::const_iterator itjet=myjets->begin(); itjet!=myjets->end(); ++itjet){
       reco::Candidate::LorentzVector uncorrJet = itjet->p4();
       
       if (uncorrJet.pt() >= min_pt){

@@ -103,6 +103,7 @@ private:
   std::vector<float> jet_ch;
   std::vector<float> jet_mass;
   std::vector<double> jet_btag;
+  std::vector<int> jet_had_flavour;
   std::vector<float> corr_jet_pt;
   std::vector<float> corr_jet_ptUp;
   std::vector<float> corr_jet_ptDown;
@@ -182,6 +183,8 @@ JetAnalyzer::JetAnalyzer(const edm::ParameterSet& iConfig)
   mtree->GetBranch("jet_mass")->SetTitle("Jet Mass");
   mtree->Branch("jet_btag",&jet_btag);
   mtree->GetBranch("jet_btag")->SetTitle("Jet Btagging Discriminant (CSV)");
+  mtree->Branch("jet_had_flavour", &jet_had_flavour);
+  mtree->GetBranch("jet_had_flavour")->SetTitle("Jet flavour PID (I think)");
   mtree->Branch("corr_jet_pt",&corr_jet_pt);
   mtree->GetBranch("corr_jet_pt")->SetTitle("Corrected Transverse Jet Momentum");
   mtree->Branch("corr_jet_ptUp",&corr_jet_ptUp);
@@ -359,6 +362,7 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   jet_ch.clear();
   jet_mass.clear();
   jet_btag.clear();
+  jet_had_flavour.clear();
   corr_jet_pt.clear();
   corr_jet_ptUp.clear();
   corr_jet_ptDown.clear();
@@ -407,104 +411,105 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       ptscale_up = 1;
       res = 1;
       if(!isData) {
-	std::vector<float> factors = factorLookup(fabs(itjet->eta())); // returns in order {factor, factor_down, factor_up}
-	std::vector<float> feta;
-	std::vector<float> PTNPU;
-	float pt = corr * uncorrJet.pt();
-	feta.push_back( fabs(uncorrJet.eta()) );
-	PTNPU.push_back( pt );
-	PTNPU.push_back( vertices->size() );
-	
-	res = jer_->correction(feta, PTNPU);
-	
-	TRandom3 JERrand;
-	
-	JERrand.SetSeed(abs(static_cast<int>(itjet->phi()*1e4)));
-	ptscale = max(0.0, 1.0 + JERrand.Gaus(0, res)*sqrt(max(0.0, factors[0]*factors[0] - 1.0)));
-	
-	JERrand.SetSeed(abs(static_cast<int>(itjet->phi()*1e4)));
-	ptscale_down = max(0.0, 1.0 + JERrand.Gaus(0, res)*sqrt(max(0.0, factors[1]*factors[1] - 1.0)));
-	
-	JERrand.SetSeed(abs(static_cast<int>(itjet->phi()*1e4)));
-	ptscale_up = max(0.0, 1.0 + JERrand.Gaus(0, res)*sqrt(max(0.0, factors[2]*factors[2] - 1.0)));
+        std::vector<float> factors = factorLookup(fabs(itjet->eta())); // returns in order {factor, factor_down, factor_up}
+        std::vector<float> feta;
+        std::vector<float> PTNPU;
+        float pt = corr * uncorrJet.pt();
+        feta.push_back( fabs(uncorrJet.eta()) );
+        PTNPU.push_back( pt );
+        PTNPU.push_back( vertices->size() );
+        
+        res = jer_->correction(feta, PTNPU);
+        
+        TRandom3 JERrand;
+        
+        JERrand.SetSeed(abs(static_cast<int>(itjet->phi()*1e4)));
+        ptscale = max(0.0, 1.0 + JERrand.Gaus(0, res)*sqrt(max(0.0, factors[0]*factors[0] - 1.0)));
+        
+        JERrand.SetSeed(abs(static_cast<int>(itjet->phi()*1e4)));
+        ptscale_down = max(0.0, 1.0 + JERrand.Gaus(0, res)*sqrt(max(0.0, factors[1]*factors[1] - 1.0)));
+        
+        JERrand.SetSeed(abs(static_cast<int>(itjet->phi()*1e4)));
+        ptscale_up = max(0.0, 1.0 + JERrand.Gaus(0, res)*sqrt(max(0.0, factors[2]*factors[2] - 1.0)));
       }
       
       if (ptscale*corr*uncorrJet.pt() >= min_pt){
-	
-	jet_e.push_back(itjet->energy());
-	jet_pt.push_back(itjet->pt());
-	jet_px.push_back(itjet->px());
-	jet_py.push_back(itjet->py());
-	jet_pz.push_back(itjet->pz());
-	jet_eta.push_back(itjet->eta());
-	jet_phi.push_back(itjet->phi());
-	jet_ch.push_back(itjet->charge());
-	jet_mass.push_back(itjet->mass());
-	if(btags.isValid() && (itjet - myjets->begin()) < btags->size()) {
-	  jet_btag.push_back(btags->operator[](itjet - myjets->begin()).second);
-	}
-	else jet_btag.push_back(-999);
-	corr_jet_pt.push_back(ptscale*corr*uncorrJet.pt());
-	corr_jet_ptUp.push_back(ptscale*corrUp*uncorrJet.pt());
-	corr_jet_ptDown.push_back(ptscale*corrDown*uncorrJet.pt());
-	corr_jet_ptSmearUp.push_back(ptscale_up*corr*uncorrJet.pt());
-	corr_jet_ptSmearDown.push_back(ptscale_down*corr*uncorrJet.pt());
-	
-	if (!isData){
-	  SF = 1;
-	  SFu = 1;
-	  SFd = 1;
-	  eff = 1;
-	  reco::JetFlavourInfo aInfo = injets->operator[](itjet - myjets->begin()).second;
-	  hadronFlavour = aInfo.getPartonFlavour();
-	  corrpt = corr_jet_pt.at(numjet);       
-	  
-	  if (jet_btag.at(numjet)> 0.679){
-	    if(abs(hadronFlavour) == 5){
-	      eff = getBtagEfficiency(corrpt);
-	      SF = getBorCtagSF(corrpt, jet_eta.at(numjet));
-	      SFu = SF + uncertaintyForBTagSF(corrpt, jet_eta.at(numjet));
-	      SFd = SF - uncertaintyForBTagSF(corrpt, jet_eta.at(numjet));
-	    } else if(abs(hadronFlavour) == 4){
-	      eff = getCtagEfficiency(corrpt);
-	      SF = getBorCtagSF(corrpt, jet_eta.at(numjet));
-	      SFu = SF + (2 * uncertaintyForBTagSF(corrpt, jet_eta.at(numjet)));
-	      SFd = SF - (2 * uncertaintyForBTagSF(corrpt, jet_eta.at(numjet)));
-	    } else {
-	      eff = getLFtagEfficiency(corrpt);
-	      SF = getLFtagSF(corrpt, jet_eta.at(numjet));
-	      SFu = SF + ( uncertaintyForLFTagSF(corrpt, jet_eta.at(numjet)));
-	      SFd = SF - ( uncertaintyForLFTagSF(corrpt, jet_eta.at(numjet)));
-	    }
-	    MC *= eff;
-	    btagWeight *= SF * eff;
-	    btagWeightUp *= SFu * eff;
-	    btagWeightDn *= SFd * eff;
-	  }
-	  else {
-	    if(abs(hadronFlavour) == 5){
-	      eff = getBtagEfficiency(corrpt);
-	      SF = getBorCtagSF(corrpt, jet_eta.at(numjet));
-	      SFu = SF + uncertaintyForBTagSF(corrpt, jet_eta.at(numjet));
-	      SFd = SF - uncertaintyForBTagSF(corrpt, jet_eta.at(numjet));
-	    } else if(abs(hadronFlavour) == 4){
-	      eff = getCtagEfficiency(corrpt);
-	      SF = getBorCtagSF(corrpt, jet_eta.at(numjet));
-	      SFu = SF + (2 * uncertaintyForBTagSF(corrpt, jet_eta.at(numjet)));
-	      SFd = SF - (2 * uncertaintyForBTagSF(corrpt, jet_eta.at(numjet)));
-	    } else {
-	      eff = getLFtagEfficiency(corrpt);
-	      SF = getLFtagSF(corrpt, jet_eta.at(numjet));
-	      SFu = SF + ( uncertaintyForLFTagSF(corrpt, jet_eta.at(numjet)));
-	      SFd = SF - ( uncertaintyForLFTagSF(corrpt, jet_eta.at(numjet)));
-	    }
-	    MC *= (1 - eff);
-	    btagWeight *= (1 - ( SF * eff));
-	    btagWeightUp *= (1 - (SFu * eff));
-	    btagWeightDn *= (1 -  (SFd * eff));
-	  }
-	}
-	++numjet;
+      
+        jet_e.push_back(itjet->energy());
+        jet_pt.push_back(itjet->pt());
+        jet_px.push_back(itjet->px());
+        jet_py.push_back(itjet->py());
+        jet_pz.push_back(itjet->pz());
+        jet_eta.push_back(itjet->eta());
+        jet_phi.push_back(itjet->phi());
+        jet_ch.push_back(itjet->charge());
+        jet_mass.push_back(itjet->mass());
+        if(btags.isValid() && (itjet - myjets->begin()) < btags->size()) {
+          jet_btag.push_back(btags->operator[](itjet - myjets->begin()).second);
+        }
+        else jet_btag.push_back(-999);
+        corr_jet_pt.push_back(ptscale*corr*uncorrJet.pt());
+        corr_jet_ptUp.push_back(ptscale*corrUp*uncorrJet.pt());
+        corr_jet_ptDown.push_back(ptscale*corrDown*uncorrJet.pt());
+        corr_jet_ptSmearUp.push_back(ptscale_up*corr*uncorrJet.pt());
+        corr_jet_ptSmearDown.push_back(ptscale_down*corr*uncorrJet.pt());
+        
+        if (!isData){
+          SF = 1;
+          SFu = 1;
+          SFd = 1;
+          eff = 1;
+          reco::JetFlavourInfo aInfo = injets->operator[](itjet - myjets->begin()).second;
+          hadronFlavour = aInfo.getPartonFlavour();
+          jet_had_flavour.push_back(hadronFlavour);
+          corrpt = corr_jet_pt.at(numjet);       
+          
+          if (jet_btag.at(numjet)> 0.679){
+            if(abs(hadronFlavour) == 5){
+              eff = getBtagEfficiency(corrpt);
+              SF = getBorCtagSF(corrpt, jet_eta.at(numjet));
+              SFu = SF + uncertaintyForBTagSF(corrpt, jet_eta.at(numjet));
+              SFd = SF - uncertaintyForBTagSF(corrpt, jet_eta.at(numjet));
+            } else if(abs(hadronFlavour) == 4){
+              eff = getCtagEfficiency(corrpt);
+              SF = getBorCtagSF(corrpt, jet_eta.at(numjet));
+              SFu = SF + (2 * uncertaintyForBTagSF(corrpt, jet_eta.at(numjet)));
+              SFd = SF - (2 * uncertaintyForBTagSF(corrpt, jet_eta.at(numjet)));
+            } else {
+              eff = getLFtagEfficiency(corrpt);
+              SF = getLFtagSF(corrpt, jet_eta.at(numjet));
+              SFu = SF + ( uncertaintyForLFTagSF(corrpt, jet_eta.at(numjet)));
+              SFd = SF - ( uncertaintyForLFTagSF(corrpt, jet_eta.at(numjet)));
+            }
+            MC *= eff;
+            btagWeight *= SF * eff;
+            btagWeightUp *= SFu * eff;
+            btagWeightDn *= SFd * eff;
+          }
+          else {
+            if(abs(hadronFlavour) == 5){
+              eff = getBtagEfficiency(corrpt);
+              SF = getBorCtagSF(corrpt, jet_eta.at(numjet));
+              SFu = SF + uncertaintyForBTagSF(corrpt, jet_eta.at(numjet));
+              SFd = SF - uncertaintyForBTagSF(corrpt, jet_eta.at(numjet));
+            } else if(abs(hadronFlavour) == 4){
+              eff = getCtagEfficiency(corrpt);
+              SF = getBorCtagSF(corrpt, jet_eta.at(numjet));
+              SFu = SF + (2 * uncertaintyForBTagSF(corrpt, jet_eta.at(numjet)));
+              SFd = SF - (2 * uncertaintyForBTagSF(corrpt, jet_eta.at(numjet)));
+            } else {
+              eff = getLFtagEfficiency(corrpt);
+              SF = getLFtagSF(corrpt, jet_eta.at(numjet));
+              SFu = SF + ( uncertaintyForLFTagSF(corrpt, jet_eta.at(numjet)));
+              SFd = SF - ( uncertaintyForLFTagSF(corrpt, jet_eta.at(numjet)));
+            }
+            MC *= (1 - eff);
+            btagWeight *= (1 - ( SF * eff));
+            btagWeightUp *= (1 - (SFu * eff));
+            btagWeightDn *= (1 -  (SFd * eff));
+          }
+        }
+        ++numjet;
       }
     }
     btagWeight = (btagWeight/MC);

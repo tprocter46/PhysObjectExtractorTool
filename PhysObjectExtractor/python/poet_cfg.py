@@ -41,7 +41,7 @@ process.MessageLogger.cerr.INFO = cms.untracked.PSet(
 process.options = cms.untracked.PSet(wantSummary=cms.untracked.bool(True))
 
 #---- Select the maximum number of events to process (if -1, run over all events)
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(200) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 #---- Load needed configuration
 process.load("Configuration.Geometry.GeometryIdeal_cff")
@@ -56,8 +56,16 @@ if isData:
 	sourceFile='root://eospublic.cern.ch//eos/opendata/cms/Run2012B/DoubleMuParked/AOD/22Jan2013-v1/10000/1EC938EF-ABEC-E211-94E0-90E6BA442F24.root'
 else: 
 	#sourceFile='root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2012/Summer12_DR53X/TTbar_8TeV-Madspin_aMCatNLO-herwig/AODSIM/PU_S10_START53_V19-v2/00000/000A9D3F-CE4C-E311-84F8-001E673969D2.root'
-	sourceFile='root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2012/Summer12_DR53X/GluGluTohhTo4b_non-resonant-mh-125_8TeV-madgraph-pythia6-tauola/AODSIM/PU_S10_START53_V19-v1/10000/92EC5AA6-8A46-E411-8B8C-7845C4FC370A.root'
-process.source = cms.Source("PoolSource",
+	sourceFile=(#'root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2012/Summer12_DR53X/GluGluTohhTo4b_non-resonant-mh-125_8TeV-madgraph-pythia6-tauola/AODSIM/PU_S10_START53_V19-v1/10000/92EC5AA6-8A46-E411-8B8C-7845C4FC370A.root',
+	            #'root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2012/Summer12_DR53X/GluGluTohhTo4b_non-resonant-mh-125_8TeV-madgraph-pythia6-tauola/AODSIM/PU_S10_START53_V19-v1/10000/C6B89871-8745-E411-A1CC-00266CF25218.root',
+				'root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2012/Summer12_DR53X/QCD_Pt_170to300_CTEQ6L1_8TeV_herwig6/AODSIM/NoPileUp_START53_V19-v1/20000/0853B3B4-79B6-E211-9DF7-00266CFAE268.root',
+				#'root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2012/Summer12_DR53X/QCD_Pt_170to300_CTEQ6L1_8TeV_herwig6/AODSIM/NoPileUp_START53_V19-v1/20000/0CD647E9-79B6-E211-82E4-00A0D1EE95CC.root',
+				'root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2012/Summer12_DR53X/TTJets_DileptDecays_8TeV-sherpa/AODSIM/PU_S10_START53_V19-v1/10000/0010099B-D5BE-E211-B928-00266CF9B86C.root',
+				'root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2012/Summer12_DR53X/TTJets_DileptDecays_8TeV-sherpa/AODSIM/PU_S10_START53_V19-v1/10000/0010FE42-F7BE-E211-B116-0026B94E2872.root',
+				'root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2012/Summer12_DR53X/TTJets_DileptDecays_8TeV-sherpa/AODSIM/PU_S10_START53_V19-v1/10000/003DA159-E8BE-E211-8C15-008CFA008D0C.root',
+				#'root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2012/Summer12_DR53X/WW2Jets_EW6-lvlvSS-wH_TuneZ2star_8TeV_phantom-tauola/AODSIM/PU_S10_START53_V19-v1/00000/00E9E2F6-284D-E311-97D9-00266CFFA754.root'
+				)
+	process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         #'file:/playground/1EC938EF-ABEC-E211-94E0-90E6BA442F24.root'
 	sourceFile
@@ -191,7 +199,7 @@ else:
 				       )
 	
 	process.mytruthjets= cms.EDAnalyzer('TruthJetAnalyzer',
-				       InputCollection = cms.InputTag("ak5PFJets")
+				       InputCollection = cms.InputTag("ak5GenJets")
 				       )
 
 process.mymets= cms.EDAnalyzer('MetAnalyzer',
