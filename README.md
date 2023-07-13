@@ -10,7 +10,7 @@ At the moment, the code dumps jet 4-momenta for truth and  PF jets, along with t
 
 This is accomplished by very minor tweaks to JetAnalyzer.cc; and the creation of a TruthJetAnalyzer.cc, based on JetAnalyzer.cc, but acting on GenJets not PFJets and with some of the complexity stripped out.
 
-The procedure for running the code is unchanged to normal POET (see POET docs). In the python folder, I provide a script that turns the root ntuples into hdf5 pandas dataframes. I do not reccoment running this in the CMSSW docker container like the rest of the code; I just store it here for convenience (requires uproot and pandas).
+The procedure for running the code is unchanged to normal POET (see POET docs). In the python folder, I provide a script (convert2h5.py) that turns the root ntuples into hdf5 pandas dataframes. I do not reccoment running this in the CMSSW docker container like the rest of the code; I just store it here for convenience (requires uproot and pandas).
 
 As a disclaimer: I am not a member of CMS; it is possible I have misunderstood things about CMSSW; refer to CMS experts if you want to know more.
 I am using the CMS Open Data. Huge credit to CMS for not just providing this data for Open science but supporting it with all these tools.
