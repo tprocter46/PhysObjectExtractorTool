@@ -1,6 +1,6 @@
 # Physics Objects Extractor Tool (POET) - 2012_jetdumper
 
-## jetdumper?
+## bjetdumper? What is this branch?
 
 This fork of POET uses the 2012 branch as the basis for extracting various variables that are/may be useful for trainning a surrogate Neural Net to replicate the results of the CMS 8(7?!)TeV CSV b-tagger.
 
@@ -8,13 +8,13 @@ Why 2012? Because the MiniAOD used for Run-2 onwards does not have as much truth
 
 At the moment, the code dumps jet 4-momenta for truth and  PF jets, along with the b-score for and the "true" hadron information. (Other variables are also dumped, this may be changed). Any other useful jet variables for tagging would require a bit more work.
 
-This is accomplished by very minor tweaks to JetAnalyzer.cc; and the creation of a TruthJetAnalyzer.cc, based on JetAnalyzer.cc, but acting on GenJets not PFJets and with some of the complexity stripped out.
+This is accomplished by very minor tweaks to JetAnalyzer.cc; and the creation of a TruthJetAnalyzer.cc, based on JetAnalyzer.cc, but acting on GenJets not PFJets and with some of the other complexity stripped out.
 
 The procedure for running the code is unchanged to normal POET (see POET docs). In the python folder, I provide a script (convert2h5.py) that turns the root ntuples into hdf5 pandas dataframes. I do not reccoment running this in the CMSSW docker container like the rest of the code; I just store it here for convenience (requires uproot and pandas).
 
-As a disclaimer: I am not a member of CMS; it is possible I have misunderstood things about CMSSW; refer to CMS experts if you want to know more.
+As a disclaimer: I am not a member of CMS; it is possible I have misunderstood things about CMSSW; refer to CMS experts if you want to know how things really work.
 I am using the CMS Open Data. Huge credit to CMS for not just providing this data for Open science but supporting it with all these tools.
-Please contact me if you have any questions/ideas and would like to discuss further!
+Please contact me if you have any questions/ideas about what I've done and would like to discuss further!
 
 I leave the rest of the readme intact below for your perusal.
 
