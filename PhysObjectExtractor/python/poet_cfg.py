@@ -63,7 +63,12 @@ else:
 				'root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2012/Summer12_DR53X/TTJets_DileptDecays_8TeV-sherpa/AODSIM/PU_S10_START53_V19-v1/10000/0010099B-D5BE-E211-B928-00266CF9B86C.root',
 				'root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2012/Summer12_DR53X/TTJets_DileptDecays_8TeV-sherpa/AODSIM/PU_S10_START53_V19-v1/10000/0010FE42-F7BE-E211-B116-0026B94E2872.root',
 				'root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2012/Summer12_DR53X/TTJets_DileptDecays_8TeV-sherpa/AODSIM/PU_S10_START53_V19-v1/10000/003DA159-E8BE-E211-8C15-008CFA008D0C.root',
-				#'root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2012/Summer12_DR53X/WW2Jets_EW6-lvlvSS-wH_TuneZ2star_8TeV_phantom-tauola/AODSIM/PU_S10_START53_V19-v1/00000/00E9E2F6-284D-E311-97D9-00266CFFA754.root'
+				'root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2012/Summer12_DR53X/TTJets_DileptDecays_8TeV-sherpa/AODSIM/PU_S10_START53_V19-v1/10000/008E9F6E-0BBF-E211-9AB7-0024E8768258.root',
+				'root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2012/Summer12_DR53X/TTJets_DileptDecays_8TeV-sherpa/AODSIM/PU_S10_START53_V19-v1/10000/0097F5ED-CDBE-E211-A621-00266CF9B7AC.root',
+				'root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2012/Summer12_DR53X/TTJets_DileptDecays_8TeV-sherpa/AODSIM/PU_S10_START53_V19-v1/10000/00FD2034-FBBE-E211-B7B0-00266CF9AF00.root',
+				#'root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2012/Summer12_DR53X/TTJets_DileptDecays_8TeV-sherpa/AODSIM/PU_S10_START53_V19-v1/10000/0201A8F5-51BF-E211-860D-848F69FD454D.root',
+				#'root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2012/Summer12_DR53X/WW2Jets_EW6-lvlvSS-wH_TuneZ2star_8TeV_phantom-tauola/AODSIM/PU_S10_START53_V19-v1/0
+				# 0000/00E9E2F6-284D-E311-97D9-00266CFFA754.root'
 				)
 	process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
